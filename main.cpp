@@ -1,29 +1,33 @@
+#include <filesystem>
 #include <iostream>
 #include <thread>
-#include <filesystem>
 
 #include "easylog.h"
+#include "type_list.h"
+#include "type_list_test.h"
 
 namespace fs = std::filesystem;
 
 int main() {
-    fs::path log_path = fs::current_path().append("log");
+  TypelistTest();
 
-    if (!fs::exists(log_path)) {
-        fs::create_directories(log_path);
-    }
+  fs::path log_path = fs::current_path().append("log");
 
-    easylog_options options;
-    options.log_dir = log_path.string();
+  if (!fs::exists(log_path)) {
+    fs::create_directories(log_path);
+  }
 
-    init_log(options);
+  easylog_options options;
+  options.log_dir = log_path.string();
 
-    LOG(INFO) << "test111";
-    LOG(WARN) << "warning";
-    LOG(ERROR) << "error:" << "11111";
+  init_log(options);
 
+  LOG(INFO) << "test111";
+  LOG(WARN) << "warning";
+  LOG(ERROR) << "error:"
+             << "11111";
 
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-    return 0;
+  return 0;
 }
