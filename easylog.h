@@ -14,12 +14,13 @@ constexpr int CRITICAL = 5;
 constexpr int OFF = 6;
 
 struct easylog_options {
-  int log_level = DEBUG;
+  std::string id = "hachi";
   std::string app_log_name = "easylog";
   std::string log_dir;
   bool always_flush = false;
+  int log_level = DEBUG;
   int flush_interval = 3;
-  int max_size = 5 * 1024 * 1024;
+  int max_size = 1024 * 10; // 5 * 1024 * 1024
   int max_files = 5;
 };
 

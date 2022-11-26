@@ -5,8 +5,8 @@
 #include <spdlog/spdlog.h>
 
 #include <filesystem>
+#include <map>
 
-bool has_init_ = false;
 bool always_flush_ = false;
 
 template <typename... Args>
@@ -92,17 +92,47 @@ std::vector<spdlog::sink_ptr> get_sinks(const easylog_options& options) {
   return sinks;
 }
 
-void init_log(easylog_options options, bool over_write) {
-  if (has_init_ && !over_write) {
-    return;
+std::shared_ptr<spdlog::logger> create_logger(const easylog_options& options) {
+  static std::map<std::string, std::shared_ptr<spdlog::logger>> logger_map;
+
+  if (logger_map.find(options.id) != logger_map.end()) {
+    return logger_map[options.id];
   }
 
-  auto sinks = get_sinks(options);
+  static auto console_sink =
+      std::make_shared<spdlog::sinks::stdout_color_sink_mt>();
+//  console_sink->set_level((spdlog::level::level_enum)options.log_level);
+  console_sink->set_pattern("[%m-%d %H:%M:%S.%e][%l] %v");
 
-  auto logger = std::make_shared<spdlog::logger>(options.app_log_name,
-                                                 sinks.begin(), sinks.end());
+  std::string filename = options.log_dir;
+  std::string name = options.app_log_name;
+  name.append(".log");
+  if (filename.back() != '/' && filename.back() != '\\') {
+    filename.append("/");
+  }
+  filename.append(name);
+  auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(
+      filename, options.max_size, options.max_files);
+  file_sink->set_pattern("[%m-%d %H:%M:%S.%e][%l] %v");
 
+  std::vector<std::shared_ptr<spdlog::sinks::sink>> sinks = {console_sink,
+                                                             file_sink};
+
+  auto logger = std::make_shared<spdlog::logger>(options.id, sinks.begin(),
+                                                 sinks.end());
+
+  logger_map[options.id] = logger;
+
+  return logger;
+}
+
+void init_log(easylog_options options, bool over_write) {
+
+  spdlog::default_logger()->flush();
+
+  auto logger = create_logger(options);
   logger->set_level((spdlog::level::level_enum)options.log_level);
+
   spdlog::set_level((spdlog::level::level_enum)options.log_level);
   spdlog::set_default_logger(logger);
 
@@ -111,7 +141,6 @@ void init_log(easylog_options options, bool over_write) {
     spdlog::flush_every(std::chrono::seconds(options.flush_interval));
   }
 
-  has_init_ = true;
 }
 
 void enable_always_flush(bool always_flush) {
