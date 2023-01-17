@@ -9,8 +9,11 @@
 #include "cache_callback.h"
 
 #include "functional/function.h"
+#include "cinatra.hpp"
 
-namespace fs = std::filesystem;
+//namespace fs = std::filesystem;
+using namespace cinatra;
+using namespace std::string_view_literals;
 
 struct DynamicInit {
   int x;
@@ -31,7 +34,16 @@ struct CallBack {
   }
 };
 
+
 int main() {
+  http_server server(1);
+  if(server.listen("0.0.0.0"sv,"18888"sv)){
+    server.set_http_handler<POST>("/test"sv,[](cinatra::request& req, cinatra::response& res){
+      res.set_status_and_content(status_type::ok,"hello",req_content_type::json);
+    });
+  }
+  server.run();
+//  server.stop();
   {
       ListenerTest ls;
       CallBack fun;
