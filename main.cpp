@@ -1,14 +1,45 @@
 #include <filesystem>
 #include <iostream>
 #include <thread>
+#include <functional>
 
 #include "easylog.h"
 #include "type_list.h"
 #include "type_list_test.h"
+#include "cache_callback.h"
+
+#include "functional/function.h"
 
 namespace fs = std::filesystem;
 
+struct DynamicInit {
+  int x;
+  int y;
+};
+
+class ListenerTest final {
+ public:
+  void Register(std23::function<void(DynamicInit)> callback){
+    std::cout << "Register" << std::endl;
+    callback({.x=1,.y=2});
+  }
+};
+
+struct CallBack {
+  void Notify(DynamicInit data){
+    std::cout << "data:" << data.x << "\t" << data.y <<std::endl;
+  }
+};
+
 int main() {
+  {
+      ListenerTest ls;
+      CallBack fun;
+
+      ls.Register({std23::nontype<&CallBack::Notify>, fun});
+  }
+
+
   { TypelistTest(); }
 
 //  {
