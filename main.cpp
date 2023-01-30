@@ -9,7 +9,10 @@
 #include "cache_callback.h"
 
 #include "functional/function.h"
+
 #include "cinatra.hpp"
+#include "compile_parse.h"
+#include "rust_macro_rule.h"
 
 //namespace fs = std::filesystem;
 using namespace cinatra;
@@ -44,6 +47,10 @@ int main() {
   }
   server.run();
 //  server.stop();
+  {
+    constexpr auto fn1 = $fn((a, b, c, d) -> d - ((a - b) + c));
+    fn1(12, 97, 11, 121);
+  }
   {
       ListenerTest ls;
       CallBack fun;
