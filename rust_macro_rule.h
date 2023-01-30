@@ -46,7 +46,7 @@ struct Group {
 template <typename... T>
 Group(std::tuple<T...>) -> Group<T...>;
 
-template<TokenType type>
+template<enum TokenType type>
 class token {
  public:
   template<TokenStream stream>
@@ -284,7 +284,7 @@ struct macro_rules {
     }
   };
 
-  template<TokenType type>
+  template<enum TokenType type>
   struct token : meta::parse::token<type> {
     template<TokenStream stream>
     consteval static auto compile() {

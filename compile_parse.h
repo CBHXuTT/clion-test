@@ -81,7 +81,7 @@ enum class TokenType {
 };
 
 struct Token {
-  TokenType type;
+  enum TokenType type;
   size_t from = 0;
   size_t to = 0;
   size_t id = 0;
@@ -305,13 +305,13 @@ constexpr auto get_argument_index(const Signature& fn, const Identifier& id) -> 
   throw std::runtime_error("Unknown parameter");
 }
 
-constexpr void expect(const auto& it, TokenType type, const char* msg) {
+constexpr void expect(const auto& it, enum TokenType type, const char* msg) {
   if ((*it).type != type) {
     throw std::runtime_error(msg);
   }
 }
 
-constexpr void consume(auto& it, TokenType type, const char* msg) {
+constexpr void consume(auto& it, enum TokenType type, const char* msg) {
   expect(it, type, msg);
   ++it;
 }

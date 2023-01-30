@@ -114,7 +114,7 @@ private:
 
   template <typename Function, typename... AP>
   void invoke(request &req, response &res, Function f, AP... ap) {
-    using result_type = std::result_of_t<Function(request &, response &)>;
+    using result_type = std::invoke_result_t<Function, request &, response &>;
     std::tuple<AP...> tp(std::move(ap)...);
     bool r = do_ap_before(req, res, tp);
 
