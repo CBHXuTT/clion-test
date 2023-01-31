@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-#ifndef _MSFT_PROXY_
-#define _MSFT_PROXY_
+#ifndef MSFT_PROXY_H
+#define MSFT_PROXY_H
 
 #include <concepts>
 #include <initializer_list>
@@ -523,4 +523,4 @@ proxy<F> make_proxy(T&& value) {
 
 }  // namespace pro
 
-#endif  // _MSFT_PROXY_
+#endif  // MSFT_PROXY_H
